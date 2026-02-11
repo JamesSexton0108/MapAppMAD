@@ -38,10 +38,10 @@ class MainActivity : ComponentActivity(), LocationListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        checkPermissions()
         setContent {
             MapAppTheme {
-                checkPermissions()
+
                 Column{
                     UI()
 
@@ -54,14 +54,14 @@ class MainActivity : ComponentActivity(), LocationListener {
     }
 
     fun checkPermissions() {
-        val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { isGranted ->
+        val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if(isGranted) {
                 startGPS()
             } else {
                 Toast.makeText(this, "GPS permission not granted", Toast.LENGTH_LONG).show()
             }
         }
-        permissionLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET))
+        permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
     @SuppressLint("MissingPermission")
@@ -72,7 +72,6 @@ class MainActivity : ComponentActivity(), LocationListener {
     }
 
     override fun onLocationChanged(location: Location) {
-        Toast.makeText(this, "Latitude: ${location.latitude}, Longitude: ${location.longitude}", Toast.LENGTH_SHORT).show()
         viewModel.latLng = LatLng(location.latitude, location.longitude)
     }
     @Composable
