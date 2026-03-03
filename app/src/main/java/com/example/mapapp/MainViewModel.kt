@@ -2,7 +2,7 @@ package com.example.mapapp
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.android.gms.maps.model.LatLng
+import org.maplibre.android.geometry.LatLng
 
 class MainViewModel: ViewModel() {
     var latLng = LatLng(0.0, 0.0)

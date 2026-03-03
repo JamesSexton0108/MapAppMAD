@@ -22,13 +22,16 @@ import android.location.LocationListener
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
-import com.google.android.gms.maps.model.LatLng
+import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.maps.Style
 import org.ramani.compose.MapLibre
 import org.ramani.compose.CameraPosition
+import org.ramani.compose.Circle
 
 class MainActivity : ComponentActivity(), LocationListener {
 
@@ -41,15 +44,23 @@ class MainActivity : ComponentActivity(), LocationListener {
         checkPermissions()
         setContent {
             MapAppTheme {
-
-                Column{
-                    UI()
-
-
+                val pos = remember {  mutableStateOf(LatLng(50.9079, -1.4015)) }
+                viewModel.latLngLiveData.observe(this) {
+                    pos.value = it
                 }
-
-
+                MapLibre(modifier = Modifier.fillMaxSize(),
+                    styleBuilder = styleBuilder,
+                    cameraPosition = CameraPosition(
+                        target = pos.value,
+                        zoom = 14.0)
+                )
+                {
+                    Circle(center = LatLng(50.9079, -1.4015),
+                        radius = 100.0f,
+                        color = "Red")
+                }
             }
+
         }
     }
 
