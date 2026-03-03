@@ -1,5 +1,6 @@
 package com.example.mapapp
 
+import android.util.MutableDouble
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import org.maplibre.android.geometry.LatLng
@@ -11,4 +12,11 @@ class MainViewModel: ViewModel() {
             latLngLiveData.value = newValue
         }
     var latLngLiveData = MutableLiveData<LatLng>()
+
+    var zoom: Double = 14.0
+        set(newValue) {
+            field = newValue
+            zoomLiveData.value = newValue
+        }
+    var zoomLiveData = MutableLiveData<Double>()
 }
