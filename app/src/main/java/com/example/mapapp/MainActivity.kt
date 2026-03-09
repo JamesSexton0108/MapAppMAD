@@ -112,10 +112,17 @@ class MainActivity : ComponentActivity(), LocationListener {
 
     @Composable
     fun MainScreenComposable(settingsCallback: () -> Unit) {
-        var pos: LatLng by remember { mutableStateOf(LatLng(50.9079, -1.4015)) }
+        var pos: LatLng by remember { mutableStateOf(viewModel.latLng) }
+        var zoomLevel: Double by remember { mutableStateOf(viewModel.zoom) }
+
         viewModel.latLngLiveData.observe(this) {
             pos = it
         }
+
+        viewModel.zoomLiveData.observe(this) {
+            zoomLevel = it
+        }
+
         Column {
             Button(onClick = { settingsCallback() }) {
                 Text("Settings")
@@ -126,7 +133,7 @@ class MainActivity : ComponentActivity(), LocationListener {
                 styleBuilder = styleBuilder,
                 cameraPosition = CameraPosition(
                     target = pos,
-                    zoom = 14.0
+                    zoom = zoomLevel
                 )
             )
             {
@@ -143,20 +150,54 @@ class MainActivity : ComponentActivity(), LocationListener {
     @Composable
     fun SettingsComposable(viewModel: MainViewModel, returnToMainCallback: () -> Unit) {
 
-        var lat: Double by remember { mutableStateOf(0.0) }
-        var lang: Double by remember { mutableStateOf(0.0) }
-        var zoom: Double by remember { mutableStateOf(0.0) }
-        var latLng: LatLng by remember { mutableStateOf(LatLng(lat,lang)) }
+        var latText by remember { mutableStateOf(viewModel.latLng.latitude.toString()) }
+        var lngText by remember { mutableStateOf(viewModel.latLng.longitude.toString()) }
+        var zoomText by remember { mutableStateOf(viewModel.zoom.toString()) }
         Column {
             Row {
-                TextField(modifier = Modifier.weight(1.0f).padding(8.dp), value = lat.toString(), onValueChange = {lat = it.toDouble()}, label = {Text("Enter Lat")})
-                TextField(modifier = Modifier.weight(1.0f).padding(8.dp), value = lang.toString(), onValueChange = {lang = it.toDouble()}, label = {Text("Enter Lang")})
-                TextField(modifier = Modifier.weight(1.0f).padding(8.dp), value = zoom.toString(), onValueChange = {zoom = it.toDouble()}, label = {Text("Enter Zoom")})
+                TextField(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(8.dp),
+                    value = latText,
+                    onValueChange = { latText = it },
+                    label = { Text("Enter Lat") }
+                )
 
+                TextField(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(8.dp),
+                    value = lngText,
+                    onValueChange = { lngText = it },
+                    label = { Text("Enter Long") }
+                )
+
+                TextField(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(8.dp),
+                    value = zoomText,
+                    onValueChange = { zoomText = it },
+                    label = { Text("Enter Zoom") }
+                )
             }
-            Button(onClick = { returnToMainCallback()  viewModel.latLng = latLng}) {
+            Button(
+                onClick = {
+                    val lat = latText.toDoubleOrNull()
+                    val lng = lngText.toDoubleOrNull()
+                    val zoom = zoomText.toDoubleOrNull()
+
+                    if (lat != null && lng != null && zoom != null) {
+                        viewModel.latLng = LatLng(lat, lng)
+                        viewModel.zoom = zoom
+                        returnToMainCallback()
+                    }
+                }
+            ) {
                 Text("Return")
-        }
+            }
+
 
 
         }
